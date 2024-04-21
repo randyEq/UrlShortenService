@@ -18,8 +18,8 @@ import com.demo.shortenUrl.service.UrlService;
 @RequestMapping("api")
 public class UrlController {
 
+	public static final String BASEURL = "http://short/";
     Logger logger = LoggerFactory.getLogger(UrlController.class);
-    public final static String BASEURL = "short";
     
     @Autowired
     private UrlService urlService;
@@ -27,6 +27,8 @@ public class UrlController {
     @PostMapping("/encode")
     public ResponseEntity<String> getShortUrl(@RequestParam String fullUrl) {
     
+    	String baseUrl = null;
+    	
     	try {
 	        // check valid Url
 	        UrlValidator validator = new UrlValidator(new String[]{"http", "https"});
@@ -35,7 +37,7 @@ public class UrlController {
 	            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 	        }
 	
-	        // Get the Shortened url from H2 database
+	        // Get the Shortened url
 	        String shortUrl = urlService.getShortUrl(fullUrl);
 	        shortUrl = BASEURL + shortUrl;
 	
