@@ -1,5 +1,8 @@
 package com.demo.shortenUrl.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -15,8 +18,11 @@ public class UrlEntity {
 
 	@Id
 	@GeneratedValue
+	@JsonInclude(Include.NON_NULL)
     private Long id;
+	@JsonInclude(Include.NON_NULL)
     private String fullUrl;
+	@JsonInclude(Include.NON_NULL)
     private String shortUrl;
 
 }

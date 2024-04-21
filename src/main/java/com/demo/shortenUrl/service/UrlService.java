@@ -32,11 +32,14 @@ public class UrlService {
      * @return FullUrl object
      */
     public String getFullUrl(String shortenString) {
-        logger.debug("Converting Base 62 string %s to Base 10 id");
-        Long id = ShorteningUtil.strToId(shortenString);
-        logger.info(String.format("Converted Base 62 string %s to Base 10 id %s", shortenString, id));
-
-        logger.info(String.format("Retrieving full url for %d", id));
+    	Long id = null;
+    	try {
+	        logger.debug("Converting Base 62 string %s to Base 10 id");
+	        id = ShorteningUtil.strToId(shortenString);
+	        logger.info(String.format("Converted Base 62 string %s to Base 10 id %s", shortenString, id));
+    	} catch (Exception e) {
+    		logger.error("Exception getFullUrl: " + e.getMessage(), e);
+    	}
         return this.get(id).getFullUrl();
     }
 
@@ -53,27 +56,31 @@ public class UrlService {
      * @return ShortUrl 
      */
     public String getShortUrl(String fullUrl) {
-
-        logger.info("Checking if the url already exists");
-        List<UrlEntity> savedUrls = null;
-        savedUrls = checkFullUrlAlreadyExists(fullUrl);
-
-        UrlEntity savedUrl = null;
-
-        if (savedUrls.isEmpty()) {
-            logger.info(String.format("Saving Url %s to database", fullUrl));
-            savedUrl = this.save(fullUrl);
-            logger.debug(savedUrl.toString());
-        } else {
-            savedUrl = savedUrls.get(0);
-            logger.info(String.format("url: %s already exists in the database. skipped insert", savedUrl));
-        }
-
-        logger.debug(String.format("Converting Base 10 %d to Base 62 string", savedUrl.getId()));
-        String shortUrlText = ShorteningUtil.idToStr(savedUrl.getId());
-        logger.info(String.format("Converted Base 10 %d to Base 62 string %s", savedUrl.getId(), shortUrlText));
-
-        return shortUrlText;
+    	String shortUrlText = null;
+    	try {
+	        logger.info("Checking if the url already exists");
+	        List<UrlEntity> savedUrls = null;
+	        savedUrls = checkFullUrlAlreadyExists(fullUrl);
+	
+	        UrlEntity savedUrl = null;
+	
+	        if (savedUrls.isEmpty()) {
+	            logger.info(String.format("Saving Url %s to database", fullUrl));
+	            savedUrl = this.save(fullUrl);
+	            logger.debug(savedUrl.toString());
+	        } else {
+	            savedUrl = savedUrls.get(0);
+	            logger.info(String.format("url: %s already exists in the database. skipped insert", savedUrl));
+	        }
+	
+	        logger.debug(String.format("Converting Base 10 %d to Base 62 string", savedUrl.getId()));
+	        shortUrlText = ShorteningUtil.idToStr(savedUrl.getId());
+	        logger.info(String.format("Converted Base 10 %d to Base 62 string %s", savedUrl.getId(), shortUrlText));
+    	} catch (Exception e) {
+    		logger.error("Exception getShortUrl: " + e.getMessage(), e);
+    	}
+    	return shortUrlText;
+       
     }
 
     /**
