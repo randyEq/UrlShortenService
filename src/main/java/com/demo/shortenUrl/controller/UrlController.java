@@ -27,10 +27,8 @@ public class UrlController {
     @PostMapping("/encode")
     public ResponseEntity<String> getShortUrl(@RequestParam String fullUrl) {
     
-    	String baseUrl = null;
-    	
     	try {
-	        // check valid Url
+	        // check valid full Url
 	        UrlValidator validator = new UrlValidator(new String[]{"http", "https"});
 	        if (!validator.isValid(fullUrl)) {
 	            logger.error("Malformed Url provided");
@@ -52,10 +50,20 @@ public class UrlController {
 
     @GetMapping("/decode")
       public ResponseEntity<String> getFullUrl(@RequestParam String shortUrl) {
+    	String shortUrlText=null;
         try {
-            String fullUrl = urlService.getFullUrl(shortUrl);
+        	// check valid short url
+        	if (!shortUrl.substring(0, 13).equals(BASEURL)) {
+        		logger.error("Malformed short Url provided");
+        		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        	} else {
+        		shortUrlText = shortUrl.substring(13);
+        	}
+        	logger.info("getFullUrl():shortUrlText: " + shortUrlText);
+        	
+            String fullUrl = urlService.getFullUrl(shortUrlText);
 
-            logger.info(String.format("Full Url %s", fullUrl));
+            logger.info(String.format("getFullUrl(): Full Url %s", fullUrl));
 
             return new ResponseEntity<>(fullUrl, HttpStatus.OK);
 		} catch (Exception e) {
